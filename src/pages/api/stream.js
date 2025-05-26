@@ -1,4 +1,4 @@
-export const GET = async () => {
+export async function GET() {
   const url = "https://af1cionados.vercel.app/AcEStREAM%20iDs.w3u";
 
   try {
@@ -15,4 +15,4 @@ export const GET = async () => {
   } catch (error) {
     return new Response("Error al obtener el archivo", { status: 500 });
   }
-};
+}

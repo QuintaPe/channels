@@ -2,10 +2,6 @@
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import SearchChannels from '@/components/SearchChannels.jsx';
 import Layout from '@/layouts/Layout.astro';
-
-const url = new URL(Astro.request.url).origin;
-const response = await fetch(`${url}/api/stream`);
-const data = await response.json();
 ---
 
 <Layout title="Canales de Streaming">
@@ -13,6 +9,6 @@ const data = await response.json();
         <CardHeader>
             <CardTitle className="text-3xl font-bold text-center">Lista de canales de streaming</CardTitle>
         </CardHeader>
-        <SearchChannels data={data} client:load />
+        <SearchChannels client:load />
     </Card>
 </Layout>

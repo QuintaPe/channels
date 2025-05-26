@@ -1,10 +1,31 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
-export default function SearchChannels({ data }) {
+export default function SearchChannels() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [data, setData] = useState({ groups: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/stream');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+        setData(jsonData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const filteredGroups = useMemo(() => {
     const lowerSearch = searchTerm.toLowerCase();
@@ -15,6 +36,14 @@ export default function SearchChannels({ data }) {
       return { ...group, stations: filteredStations };
     }).filter(group => group.stations.length > 0);
   }, [searchTerm, data]);
+
+  if (loading) {
+    return <div className="text-center p-4">Cargando...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500 p-4">Error: {error}</div>;
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
@@ -38,7 +67,6 @@ export default function SearchChannels({ data }) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[400px] w-full">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {group.stations.map(station => (
                     <Card key={station.name} className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -57,7 +85,6 @@ export default function SearchChannels({ data }) {
                     </Card>
                   ))}
                 </div>
-              </ScrollArea>
             </CardContent>
           </Card>
         ))
