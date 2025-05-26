@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 export default function SearchChannels() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,8 +31,9 @@ export default function SearchChannels() {
     const lowerSearch = searchTerm.toLowerCase();
     return data.groups.map(group => {
       const filteredStations = group.stations.filter(station =>
-        station.name.toLowerCase().includes(lowerSearch)
+        station.name.toLowerCase().replace(/\s+/g, '').includes(lowerSearch.replace(/\s+/g, ''))
       );
+      console.log(searchTerm, filteredStations);
       return { ...group, stations: filteredStations };
     }).filter(group => group.stations.length > 0);
   }, [searchTerm, data]);
@@ -45,50 +46,58 @@ export default function SearchChannels() {
     return <div className="text-center text-red-500 p-4">Error: {error}</div>;
   }
 
+  console.log(filteredGroups);
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
-      <Input
-        type="text"
-        placeholder="Buscar canales..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="mb-6"
-      />
+    <div className="min-h-screen bg-[#121212] text-white p-4">
+      <div className="max-w-7xl mx-auto">
+        <Input
+          type="text"
+          placeholder="Buscar canales..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="mb-8 bg-[#1E1E1E] border-none text-white placeholder:text-gray-400"
+        />
+        {console.log(filteredGroups)}
+        {filteredGroups.map(group => (
+          <div key={group.name + searchTerm} className="mb-8">
+            <div className="flex items-center gap-3 mb-6">
+              <img src={group.image} alt={group.name} className="w-8 h-8 rounded-full" />
+              <h2 className="text-xl font-bold">{group.name}</h2>
+            </div>
 
-      {filteredGroups.length === 0 ? (
-        <p className="text-center text-muted-foreground">No se encontraron canales.</p>
-      ) : (
-        filteredGroups.map(group => (
-          <Card key={group.name} className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-4">
-                <img src={group.image} alt={group.name} className="w-10 h-10 rounded-lg" />
-                <span>{group.name}</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {group.stations.map(station => (
-                    <Card key={station.name} className="overflow-hidden hover:shadow-lg transition-shadow">
-                      <CardContent className="p-4">
-                        <img src={station.image} alt={station.name} className="w-full h-32 object-contain mb-3 rounded-md" />
-                        <h3 className="font-semibold text-lg mb-2">{station.name}</h3>
-                        <a 
-                          href={station.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-500 hover:text-blue-600 hover:underline break-all"
-                        >
-                          {station.url}
-                        </a>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-            </CardContent>
-          </Card>
-        ))
-      )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {group.stations.map(station => (
+                <Card 
+                  key={station.name + station.url} 
+                  className="bg-[#1E1E1E] border-none overflow-hidden hover:bg-[#252525] transition-colors"
+                  onClick={() => window.open(station.url, '_blank')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="p-4">
+                    <div className="flex justify-center items-center relative mb-3">
+                      {station.image && (
+                        <img src={station.image} alt={station.name} className="h-16 object-contain" 
+                        style={{ borderRadius: '10px' }} 
+                        />
+                      )}
+                    </div>
+                    <h3 className="text-center font-semibold mb-2 text-xl">{station.name}</h3>
+                    <div className="mt-3 pt-3 border-t border-gray-700">
+                      <p className="text-center text-[10px] font-mono text-gray-500 break-all">
+                        {station.url}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {filteredGroups.length === 0 && (
+          <p className="text-center text-gray-400">No se encontraron canales.</p>
+        )}
+      </div>
     </div>
   );
 }
