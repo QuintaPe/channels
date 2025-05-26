@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 
-export default function SearchChannels() {
+export default function SearchChannels({ url }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [data, setData] = useState({ groups: [] });
   const [loading, setLoading] = useState(true);
@@ -11,7 +11,7 @@ export default function SearchChannels() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/stream');
+        const response = await fetch(`/api/stream?url=${encodeURIComponent(url)}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -29,13 +29,21 @@ export default function SearchChannels() {
 
   const filteredGroups = useMemo(() => {
     const lowerSearch = searchTerm.toLowerCase();
-    return data.groups.map(group => {
-      const filteredStations = group.stations.filter(station =>
+    
+    // Handle both single group and groups array cases
+    if (data.groups) {
+      return data.groups.map(group => {
+        const filteredStations = group.stations.filter(station =>
+          station.name.toLowerCase().replace(/\s+/g, '').includes(lowerSearch.replace(/\s+/g, ''))
+        );
+        return { ...group, stations: filteredStations };
+      }).filter(group => group.stations.length > 0);
+    } else {
+      const filteredStations = data.stations?.filter(station =>
         station.name.toLowerCase().replace(/\s+/g, '').includes(lowerSearch.replace(/\s+/g, ''))
-      );
-      console.log(searchTerm, filteredStations);
-      return { ...group, stations: filteredStations };
-    }).filter(group => group.stations.length > 0);
+      ) || [];
+      return [{...data, stations: filteredStations}];
+    }
   }, [searchTerm, data]);
 
   if (loading) {
@@ -46,10 +54,8 @@ export default function SearchChannels() {
     return <div className="text-center text-red-500 p-4">Error: {error}</div>;
   }
 
-  console.log(filteredGroups);
   return (
-    <div className="min-h-screen bg-[#121212] text-white p-4">
-      <div className="max-w-7xl mx-auto">
+    <>
         <Input
           type="text"
           placeholder="Buscar canales..."
@@ -57,7 +63,7 @@ export default function SearchChannels() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="mb-8 bg-[#1E1E1E] border-none text-white placeholder:text-gray-400"
         />
-        {console.log(filteredGroups)}
+
         {filteredGroups.map(group => (
           <div key={group.name + searchTerm} className="mb-8">
             <div className="flex items-center gap-3 mb-6">
@@ -69,9 +75,9 @@ export default function SearchChannels() {
               {group.stations.map(station => (
                 <Card 
                   key={station.name + station.url} 
-                  className="bg-[#1E1E1E] border-none overflow-hidden hover:bg-[#252525] transition-colors"
+                  className="bg-[#17191d] overflow-hidden hover:bg-[#252525] transition-colors"
                   onClick={() => window.open(station.url, '_blank')}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', borderRadius: '5px', padding: '10px' }}
                 >
                   <div className="p-4">
                     <div className="flex justify-center items-center relative mb-3">
@@ -97,7 +103,6 @@ export default function SearchChannels() {
         {filteredGroups.length === 0 && (
           <p className="text-center text-gray-400">No se encontraron canales.</p>
         )}
-      </div>
-    </div>
+      </>
   );
 }
