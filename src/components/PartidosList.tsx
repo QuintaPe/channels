@@ -10,6 +10,8 @@ interface Partido {
   partido: string;
   hora: string;
   canales: string[];
+  local: string;
+  visitante: string;
 }
 
 interface Liga {
@@ -127,9 +129,12 @@ export default function PartidosList() {
                     {liga.partidos.map((partido, partidoIndex) => (
                       <Card key={partidoIndex}>
                         <div>
-                          <div className="flex items-center justify-between mb-2">
-                            <h2 className="text-lg font-semibold text-white">⚽ {partido.partido}</h2>
-                            <span className="text-sm text-gray-400">🕐 {partido.hora}</span>
+                          <div className="flex justify-between mb-2">
+                            <div>
+                                <h2 className="text-lg font-semibold text-white truncate">{partido.local}</h2>
+                                <h2 className="text-lg font-semibold text-white truncate">{partido.visitante}</h2>
+                            </div>
+                            <span className="text-sm text-gray-400 bg-gray-800 px-2 py-1 rounded h-fit">{partido.hora}</span>
                           </div>
 
                           <div className="border-t border-gray-700 pt-3">

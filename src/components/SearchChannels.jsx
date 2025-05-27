@@ -86,7 +86,7 @@ export default function SearchChannels({ url }) {
                     </div>
                     <h3 className="text-center font-semibold mb-2 text-xl">{station.name}</h3>
                     <div className="mt-3 pt-3 border-t border-gray-700">
-                      <p className="text-center text-[10px] font-mono text-gray-500 break-all">
+                      <p className="text-center text-[9px] font-mono text-gray-500 break-all">
                         {station.url}
                       </p>
                     </div>

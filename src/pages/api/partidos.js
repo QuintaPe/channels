@@ -17,7 +17,8 @@ export async function GET() {
       // Detectar día
       if (fila.hasClass('cabeceraTabla')) {
         const textoDia = fila.find('td').text().trim();
-        diaActual = textoDia.replace('Partidos de hoy ', '').trim();
+        diaActual = textoDia.replace('Partidos de hoy ', '').replace('Mañana ', '').trim();
+        diaActual = diaActual.charAt(0).toUpperCase() + diaActual.slice(1).toLowerCase();
 
         // Asegurar estructura en resultado
         if (!resultado.find(d => d.dia === diaActual)) {
@@ -63,6 +64,8 @@ export async function GET() {
       const partido = {
         hora,
         partido: `${local} vs ${visitante}`,
+        local,
+        visitante,
         canales
       };
 
