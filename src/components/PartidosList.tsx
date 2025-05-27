@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/card';
+import  Card  from '@/components/Card';
 import { Input } from '@/components/ui/input';
 
 interface Canal {
@@ -28,6 +28,7 @@ export default function PartidosList() {
   const [filteredPartidos, setFilteredPartidos] = useState<DiaPartidos[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentDay, setCurrentDay] = useState(0);
 
   useEffect(() => {
     const fetchPartidos = async () => {
@@ -70,6 +71,17 @@ export default function PartidosList() {
     setFilteredPartidos(filtered);
   }, [searchTerm, partidos]);
 
+  const handleDay = (isPrev: boolean) => {
+    if (isPrev && currentDay === 0) {
+      return;
+    }
+    if (!isPrev && currentDay === partidos.length - 1) {
+      return;
+    }
+    const newDay = currentDay + (isPrev ? -1 : 1);
+    setCurrentDay(newDay);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -92,46 +104,50 @@ export default function PartidosList() {
         placeholder="Buscar partidos..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="mb-8 bg-[#1E1E1E] border-none text-white placeholder:text-gray-400"
+        className="mb-8 bg-[#1E1E1E]"
       />
 
       <div id="partidosContainer">
-        {filteredPartidos.map((dia, diaIndex) => (
-          <div key={diaIndex} className="mb-10 dia-container">
-            <h2 className="text-xl font-semibold text-white mb-6">📅 {dia.dia}</h2>
-            
-            {dia.ligas.map((liga, ligaIndex) => (
-              <div key={ligaIndex} className="mb-8 liga-container">
-                <h3 className="text-lg font-medium text-gray-300 mb-4">🏆 {liga.nombre}</h3>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {liga.partidos.map((partido, partidoIndex) => (
-                    <Card 
-                      key={partidoIndex}
-                      className="bg-[#17191d] border border-[#2c2c2c] rounded-xl hover:bg-[#252525] transition-colors"
-                      style={{ borderRadius: '10px' }}
-                    >
-                      <div className="p-5 text-gray-300">
-                        <div className="flex items-center justify-between mb-2">
-                          <h2 className="text-lg font-semibold text-white">⚽ {partido.partido}</h2>
-                          <span className="text-sm text-gray-400">🕐 {partido.hora}</span>
-                        </div>
+        {(() => {
+          const dia = filteredPartidos[currentDay];
+          if (!dia) return null;
+          
+          return (
+            <div className="dia-container">
+              <h2 className="text-2xl font-bold mb-6 flex items-center justify-between">
+                  <button onClick={() => handleDay(true)} className="cursor-pointer hover:text-gray-400">←</button>
+                  {dia.dia}
+                  <button onClick={() => handleDay(false)} className="cursor-pointer hover:text-gray-400">→</button>
+              </h2>
+              {dia.ligas.map((liga, ligaIndex) => (
+                <div key={ligaIndex} className="mb-12 liga-container">
+                  <h3 className="text-2xl font-bold text-yellow-200 mb-2">{liga.nombre}</h3>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {liga.partidos.map((partido, partidoIndex) => (
+                      <Card key={partidoIndex}>
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-lg font-semibold text-white">⚽ {partido.partido}</h2>
+                            <span className="text-sm text-gray-400">🕐 {partido.hora}</span>
+                          </div>
 
-                        <div className="border-t border-gray-700 pt-3">
-                          <ul className="space-y-1 text-sm text-gray-400">
-                            {partido.canales.map((canal, canalIndex) => (
-                              <li key={canalIndex}>📺 {canal}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
+                          <div className="border-t border-gray-700 pt-3">
+                            <ul className="space-y-1 text-sm text-gray-400">
+                              {partido.canales.map((canal, canalIndex) => (
+                                <li key={canalIndex}>📺 {canal}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          </div>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ))}
+              ))}
+            </div>
+          );
+        })()}
 
         {filteredPartidos.length === 0 && (
           <p className="text-center text-gray-500 mt-10">No hay partidos que coincidan con tu búsqueda.</p>

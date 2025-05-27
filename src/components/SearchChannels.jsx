@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
+import Card from "@/components/Card";
 
 export default function SearchChannels({ url }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,25 +61,22 @@ export default function SearchChannels({ url }) {
           placeholder="Buscar canales..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="mb-8 bg-[#1E1E1E] border-none text-white placeholder:text-gray-400"
+          className="mb-8 bg-[#1E1E1E]"
         />
 
         {filteredGroups.map(group => (
-          <div key={group.name + searchTerm} className="mb-8">
-            <div className="flex items-center gap-3 mb-6">
-              <img src={group.image} alt={group.name} className="w-8 h-8 rounded-full" />
-              <h2 className="text-xl font-bold">{group.name}</h2>
+          <div key={group.name + searchTerm} className="mb-16">
+            <div className="flex items-center gap-3 mb-2">
+              <h2 className="text-2xl font-bold text-yellow-200">{group.name}</h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {group.stations.map(station => (
                 <Card 
                   key={station.name + station.url} 
-                  className="bg-[#17191d] overflow-hidden hover:bg-[#252525] transition-colors"
                   onClick={() => window.open(station.url, '_blank')}
-                  style={{ cursor: 'pointer', borderRadius: '5px', padding: '10px' }}
                 >
-                  <div className="p-4">
+                  <div>
                     <div className="flex justify-center items-center relative mb-3">
                       {station.image && (
                         <img src={station.image} alt={station.name} className="h-16 object-contain" 
