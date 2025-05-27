@@ -5,8 +5,8 @@ export default function Card({ className = '', ...props }) {
       <div
         data-slot="card"
         className={cn(
-            "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
-            "bg-[#17191d] overflow-hidden hover:bg-[#252525] transition-colors rounded-[5px] p-4",
+            "bg-gradient-to-br from-card via-[#1a1d23] to-card text-card-foreground flex flex-col gap-6 border border-ring/30 rounded-sm py-6 shadow-sm",
+            "overflow-hidden hover:bg-[#252525] transition-colors p-4 ",
             props.onClick && "cursor-pointer",
             className
         )}

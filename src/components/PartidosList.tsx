@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import  Card  from '@/components/Card';
 import { Input } from '@/components/ui/input';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Canal {
   nombre: string;
@@ -106,7 +107,7 @@ export default function PartidosList() {
         placeholder="Buscar partidos..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="mb-8 bg-[#1E1E1E]"
+        className="mb-8"
       />
 
       <div id="partidosContainer">
@@ -117,9 +118,13 @@ export default function PartidosList() {
           return (
             <div className="dia-container">
               <h2 className="text-2xl font-bold mb-6 flex items-center justify-between">
-                  <button onClick={() => handleDay(true)} className="cursor-pointer hover:text-gray-400">←</button>
+                  <button onClick={() => handleDay(true)} className="cursor-pointer hover:text-gray-400">
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
                   {dia.dia}
-                  <button onClick={() => handleDay(false)} className="cursor-pointer hover:text-gray-400">→</button>
+                  <button onClick={() => handleDay(false)} className="cursor-pointer hover:text-gray-400">
+                    <ChevronRight className="w-6 h-6" />    
+                  </button>
               </h2>
               {dia.ligas.map((liga, ligaIndex) => (
                 <div key={ligaIndex} className="mb-12 liga-container">

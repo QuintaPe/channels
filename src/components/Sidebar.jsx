@@ -53,7 +53,7 @@ export default function Sidebar() {
         {isMobile && (
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="menu-button fixed top-4 right-4 bg-[#252525] hover:bg-[#303030] rounded-full p-2 cursor-pointer z-[60] border border-[#404040] transition-colors duration-200"
+            className="menu-button fixed top-4 right-4 bg-gradient-to-br from-card via-[#1a1d23] to-card rounded-full p-2 cursor-pointer z-[60] border border-[#404040] transition-colors duration-200"
           >
             <svg
               className="w-6 h-6 text-white"
@@ -68,7 +68,7 @@ export default function Sidebar() {
 
         <aside 
           className={`
-            bg-[#17191d] transition-all duration-300 ease-in-out h-screen sidebar
+            bg-gradient-to-br from-card via-[#1a1d23] to-card transition-all duration-300 ease-in-out h-screen sidebar
             ${isMobile 
               ? 'fixed w-[280px] -left-[280px] z-50' 
               : `${isCollapsed ? 'w-[90px]' : 'w-[280px]'}`
@@ -106,7 +106,7 @@ export default function Sidebar() {
                 <a
                   key={item.path}
                   href={item.path}
-                  className="flex items-center text-gray-300 hover:text-white hover:bg-[#252525] rounded-lg p-3 transition-colors duration-200 group"
+                  className="flex items-center text-gray-300 hover:text-white hover:bg-[#252525] rounded-sm p-3 transition-colors duration-200 group"
                 >
                   <span className="text-2xl min-w-[32px]">{item.icon}</span>
                   {(!isCollapsed || isMobile) && (

@@ -61,7 +61,7 @@ export default function SearchChannels({ url }) {
           placeholder="Buscar canales..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="mb-8 bg-[#1E1E1E]"
+          className="mb-8"
         />
 
         {filteredGroups.map(group => (
