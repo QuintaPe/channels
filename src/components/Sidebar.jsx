@@ -44,6 +44,7 @@ export default function Sidebar() {
     const menuItems = [
       { name: 'Canales', icon: '⚽', path: '/' },
       { name: 'Partidos', icon: '📅', path: '/partidos' },
+      { name: 'En directo', icon: '🔴', path: '/live' },
       { name: 'MotoGP', icon: '🏍️', path: '/motogp' },
       { name: 'MMA', icon: '🥊', path: '/mma' },
     ];

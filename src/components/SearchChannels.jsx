@@ -53,7 +53,7 @@ export default function SearchChannels({ url }) {
   if (error) {
     return <div className="text-center text-red-500 p-4">Error: {error}</div>;
   }
-
+  
   return (
     <>
         <Input
