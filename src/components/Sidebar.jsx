@@ -72,7 +72,7 @@ export default function Sidebar({ user }) {
         <aside 
           className={`
             flex flex-col justify-between
-            bg-gradient-to-br from-card via-[#1a1d23] to-card transition-all duration-300 ease-in-out h-screen sidebar
+            bg-gradient-to-br from-card via-[#1a1d23] to-card transition-all duration-300 ease-in-out h-[100dvh] sidebar
             ${isMobile 
               ? 'fixed w-[280px] -left-[280px] z-50' 
               : `${isCollapsed ? 'w-[88px]' : 'w-[280px]'}`
