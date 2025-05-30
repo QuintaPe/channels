@@ -17,7 +17,6 @@ export default function LiveMatches() {
           throw new Error('Error en la respuesta del servidor');
         }
         const data = await response.json();
-        console.log(data);
         setLiveMatches(data.response);
         setLoading(false);
       } catch (err) {

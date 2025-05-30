@@ -9,6 +9,7 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const user = await Astro.locals.currentUser();
 ---
 
 <!DOCTYPE html>
@@ -23,7 +24,7 @@ const { title, description } = Astro.props;
 		<ClientRouter />
 	</head>
 	<body class="bg-gradient-to-br from-background via-card to-background text-foreground flex">
-		<Sidebar client:only="react" />
+		<Sidebar client:only="react" user={user} />
 		<main 
 			class="transition-all duration-300 h-screen overflow-y-auto flex-1 px-4 md:px-16" 
 			id="mainContent"

@@ -4,11 +4,13 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 import path from 'path';
 
-import vercel from '@astrojs/vercel';
 
-// https://astro.build/config
+import vercel from '@astrojs/vercel';
+import clerk from "@clerk/astro";
+
 export default defineConfig({
-  integrations: [react()],
+  integrations: [react(), clerk()],
+  adapter: vercel(),
   output: 'server',
   vite: {
     plugins: [tailwindcss()],
@@ -18,6 +20,4 @@ export default defineConfig({
       }
     }
   },
-
-  adapter: vercel()
 });
