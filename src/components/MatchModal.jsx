@@ -144,7 +144,7 @@ export default function MatchModal({ selectedMatch, setSelectedMatch }) {
                     </div>
                   )}
                   
-                  {event.detail && event.type !== "Card" && (
+                  {event.detail && event.type !== "Card" && event.detail !== "Normal Goal" && (
                     <div className="md:ml-8 text-gray-400 italic">
                       {event.detail}
                     </div>
