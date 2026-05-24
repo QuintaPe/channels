@@ -1,27 +1,34 @@
-# build output
-dist/
-
-# generated types
-.astro/
-
-# dependencies
-node_modules/
-
-# logs
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
-# environment variables
+node_modules
+dist
+dist-ssr
 .env
-.env.production
+.vercel
+.output
+.vinxi
+.tanstack/**
+.nitro
+*.local
 
-# macOS-specific files
+# Wrangler / Cloudflare
+.wrangler/
+.dev.vars
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-
-# jetbrains setting folder
-.idea/
-
-# vercel
-.vercel/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
