@@ -1,5 +1,9 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "rewrites": [
+    { "source": "/canales_manifest.m3u", "destination": "/api/canales-manifest" },
+    { "source": "/canales.m3u", "destination": "/api/canales" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/canales.m3u",

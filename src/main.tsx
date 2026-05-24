@@ -6,9 +6,6 @@ import { esES } from "@clerk/localizations";
 import { clerkAppearance } from "@/lib/clerk-appearance";
 import Index from "./routes/index";
 import NotFound from "./routes/NotFound";
-import M3uManifest from "./routes/M3uManifest";
-import M3u from "./routes/M3u";
-
 import "@fontsource/outfit/400.css";
 import "@fontsource/outfit/500.css";
 import "@fontsource/outfit/600.css";
@@ -31,8 +28,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/canales.m3u" element={<M3u />} />
-          <Route path="/canales_manifest.m3u" element={<M3uManifest />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { m3uDevMiddleware } from "./vite.m3u-middleware";
 
 const HIDDEN_ROUTE_HEADERS = {
   "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet, noimageindex",
@@ -34,6 +35,15 @@ export default defineConfig({
       },
       configurePreviewServer(server) {
         server.middlewares.use(applyNoIndexHeaders);
+      },
+    },
+    {
+      name: "m3u-dev-server",
+      configureServer(server) {
+        server.middlewares.use(m3uDevMiddleware);
+      },
+      configurePreviewServer(server) {
+        server.middlewares.use(m3uDevMiddleware);
       },
     },
   ],
