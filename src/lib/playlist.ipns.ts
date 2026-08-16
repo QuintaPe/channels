@@ -4,6 +4,17 @@ const ELCANO_SCRAPE_URLS = [
   "https://dweb.link/ipns/elcano-top/",
 ];
 
+/**
+ * IPNS key that actually serves the playlist files (found via elcano.top's
+ * "Enlaces útiles" section). elcano.top's own DNSLink can go stale/offline
+ * independently of this key, so we try it directly before falling back to
+ * scraping elcano.top for a (possibly rotated) key.
+ */
+const KNOWN_IPNS_BASE_URLS = [
+  "https://k51qzi5uqu5di462t7j4vu4akwfhvtjhy88qbupktvoacqfqe9uforjvhyi4wr.ipns.dweb.link",
+  "https://ipfs.io/ipns/k51qzi5uqu5di462t7j4vu4akwfhvtjhy88qbupktvoacqfqe9uforjvhyi4wr",
+];
+
 function parseIpnsBaseUrlFromElcanoHtml(html: string): string | null {
   const section = html.match(
     /<h2[^>]*>[\s\S]*?Enlaces útiles[\s\S]*?<\/h2>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i,
@@ -44,8 +55,7 @@ async function resolveIpnsBaseUrl(): Promise<string> {
   return baseUrl;
 }
 
-async function fetchIpnsFile(path: string): Promise<string> {
-  const baseUrl = await resolveIpnsBaseUrl();
+async function fetchFromBaseUrl(baseUrl: string, path: string): Promise<string> {
   const res = await fetch(`${baseUrl}/${path}`, {
     headers: { accept: "*/*" },
     redirect: "follow",
@@ -59,6 +69,18 @@ async function fetchIpnsFile(path: string): Promise<string> {
     throw new Error(`La respuesta de ${path} no es un M3U válido`);
   }
   return text;
+}
+
+async function fetchIpnsFile(path: string): Promise<string> {
+  for (const baseUrl of KNOWN_IPNS_BASE_URLS) {
+    try {
+      return await fetchFromBaseUrl(baseUrl, path);
+    } catch {
+      // try next known base, then fall back to scraping elcano.top
+    }
+  }
+  const baseUrl = await resolveIpnsBaseUrl();
+  return fetchFromBaseUrl(baseUrl, path);
 }
 
 /**
