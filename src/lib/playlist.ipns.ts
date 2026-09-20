@@ -99,10 +99,10 @@ async function fetchFromBaseUrl(
  * The IPNS record signature is not verified here (same trust level as the
  * public gateways this replaces).
  */
-async function resolveIpnsCid(): Promise<string> {
-  const res = await fetch(`${DELEGATED_ROUTING_IPNS_URL}/${IPNS_KEY}`, {
+async function fetchIpnsRecordCid(url: string): Promise<string> {
+  const res = await fetch(url, {
     headers: { accept: "application/vnd.ipfs.ipns-record" },
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.timeout(8_000),
   });
   if (!res.ok) {
     throw new Error(`Error al resolver IPNS: ${res.status}`);
@@ -113,6 +113,30 @@ async function resolveIpnsCid(): Promise<string> {
     throw new Error("El registro IPNS no contiene un CID");
   }
   return cid;
+}
+
+async function resolveIpnsCidUncached(): Promise<string> {
+  const url = `${DELEGATED_ROUTING_IPNS_URL}/${IPNS_KEY}`;
+  try {
+    // The router's CDN can serve a record up to ~24h old (stale-while-revalidate),
+    // so ask with a unique query string to skip that cache and get the current one.
+    return await fetchIpnsRecordCid(`${url}?cb=${Date.now()}`);
+  } catch {
+    return fetchIpnsRecordCid(url);
+  }
+}
+
+/** Shared for a few seconds so the list and its date come from the same CID. */
+let pendingCid: { promise: Promise<string>; at: number } | null = null;
+
+function resolveIpnsCid(): Promise<string> {
+  if (pendingCid && Date.now() - pendingCid.at < 30_000) return pendingCid.promise;
+  const promise = resolveIpnsCidUncached();
+  pendingCid = { promise, at: Date.now() };
+  promise.catch(() => {
+    if (pendingCid?.promise === promise) pendingCid = null;
+  });
+  return promise;
 }
 
 async function fetchViaResolvedCid(path: string, isValid: Validator): Promise<string> {

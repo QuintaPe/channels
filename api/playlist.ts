@@ -6,9 +6,10 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     const { text, generatedAt } = await fetchAcestreamPlaylist();
 
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    // Short stale window: a long stale-while-revalidate served day-old lists to the first visitor.
     res.setHeader(
       "Cache-Control",
-      "public, s-maxage=300, stale-while-revalidate=86400, stale-if-error=86400",
+      "public, s-maxage=300, stale-while-revalidate=300, stale-if-error=86400",
     );
     if (generatedAt) res.setHeader("X-Playlist-Generated", generatedAt);
     res.status(200).send(text);
