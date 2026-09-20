@@ -4,6 +4,7 @@ import { Search, Loader2, CalendarDays } from "lucide-react";
 import { useUser, useAuth } from "@clerk/clerk-react";
 import { getPlaylist, type Group, type PlaylistData } from "@/lib/playlist.functions";
 import { getEpg, type EpgData } from "@/lib/epg.functions";
+import { formatUpdatedAt } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
@@ -123,7 +124,11 @@ export default function Index() {
                 </h1>
                 <p className="mt-1 text-[13px] text-muted-foreground">
                   {data
-                    ? `${visibleCount} de ${data.totalChannels} canales · ${data.groups.length} categorías`
+                    ? `${visibleCount} de ${data.totalChannels} canales · ${data.groups.length} categorías${
+                        data.generatedAt
+                          ? ` · Actualizada ${formatUpdatedAt(Date.parse(data.generatedAt))}`
+                          : ""
+                      }`
                     : "Cargando lista de canales…"}
                 </p>
               </div>

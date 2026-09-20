@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Connect } from "vite";
 import { resolveM3uContentType } from "./src/lib/m3u-response";
-import { fetchM3uManifest, fetchM3uRaw } from "./src/lib/playlist.ipns";
+import { fetchAcestreamPlaylist, fetchM3uManifest, fetchM3uRaw } from "./src/lib/playlist.ipns";
 
 const ROBOTS = "noindex, nofollow, noarchive, nosnippet, noimageindex";
 
@@ -33,6 +33,21 @@ async function serveM3u(
   }
 }
 
+async function servePlaylist(res: ServerResponse): Promise<void> {
+  try {
+    const { text, generatedAt } = await fetchAcestreamPlaylist();
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    if (generatedAt) res.setHeader("X-Playlist-Generated", generatedAt);
+    res.end(text);
+  } catch (error) {
+    console.error("Playlist dev middleware:", error);
+    res.statusCode = 502;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ error: "No se pudo cargar la lista" }));
+  }
+}
+
 export const m3uDevMiddleware: Connect.NextHandleFunction = (req, res, next) => {
   const path = req.url?.split("?")[0] ?? "";
 
@@ -42,6 +57,10 @@ export const m3uDevMiddleware: Connect.NextHandleFunction = (req, res, next) => 
   }
   if (path === "/canales.m3u") {
     void serveM3u(req, res, fetchM3uRaw);
+    return;
+  }
+  if (path === "/api/playlist") {
+    void servePlaylist(res);
     return;
   }
 

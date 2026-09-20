@@ -12,15 +12,31 @@ export function formatTime(t: number): string {
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
+function sameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+/** "hoy a las 10:00", "ayer a las 10:00" or "18 sep a las 10:00". */
+export function formatUpdatedAt(t: number): string {
+  const d = new Date(t);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const time = formatTime(t);
+  if (sameDay(d, today)) return `hoy a las ${time}`;
+  if (sameDay(d, yesterday)) return `ayer a las ${time}`;
+  return `${d.toLocaleDateString([], { day: "numeric", month: "short" })} a las ${time}`;
+}
+
 export function formatDayLabel(t: number): string {
   const d = new Date(t);
   const today = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
-  const sameDay = (a: Date, b: Date) =>
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate();
   if (sameDay(d, today)) return "Hoy";
   if (sameDay(d, tomorrow)) return "Mañana";
   return d.toLocaleDateString([], { weekday: "long", day: "2-digit", month: "short" });

@@ -1,8 +1,4 @@
-import {
-  fetchAcestreamPlaylistText,
-  fetchM3uManifest,
-  fetchM3uRaw,
-} from "@/lib/playlist.ipns";
+import { fetchM3uManifest, fetchM3uRaw } from "@/lib/playlist.ipns";
 
 export { fetchM3uManifest, fetchM3uRaw };
 
@@ -26,6 +22,8 @@ export type PlaylistData = {
   epgUrls: string[];
   groups: Group[];
   totalChannels: number;
+  /** When the publisher generated the list (ISO 8601), if known. */
+  generatedAt: string | null;
 };
 
 function attr(line: string, key: string): string {
@@ -34,7 +32,12 @@ function attr(line: string, key: string): string {
 }
 
 export async function getPlaylist(): Promise<PlaylistData> {
-  const text = await fetchAcestreamPlaylistText();
+  const res = await fetch("/api/playlist", { signal: AbortSignal.timeout(45_000) });
+  if (!res.ok) {
+    throw new Error(`No se pudo cargar la lista (${res.status})`);
+  }
+  const generatedAt = res.headers.get("X-Playlist-Generated");
+  const text = await res.text();
   const lines = text.split(/\r?\n/);
 
   let epgUrls: string[] = [];
@@ -111,5 +114,5 @@ export async function getPlaylist(): Promise<PlaylistData> {
       channels: byGroup.get(g) || [],
     }));
 
-  return { epgUrls, groups, totalChannels: channels.length };
+  return { epgUrls, groups, totalChannels: channels.length, generatedAt };
 }
