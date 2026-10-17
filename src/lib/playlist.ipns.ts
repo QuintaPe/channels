@@ -197,7 +197,10 @@ function applyHostOverrides(text: string, ipOverride?: string, portOverride?: st
  * HTTPAceProxy expects instead (/content_id/HASH/stream.ts).
  */
 function applyProxyFormat(text: string): string {
-  return text.replace(/\/ace\/getstream\?id=([a-fA-F0-9]+)/g, "/content_id/$1/stream.ts");
+  return text.replace(
+    /\/ace\/(?:getstream|manifest\.m3u8)\?id=([a-fA-F0-9]+)/g,
+    "/content_id/$1/stream.ts",
+  );
 }
 
 /**
@@ -222,10 +225,14 @@ export async function fetchM3uRaw(
 export async function fetchM3uManifest(
   ipOverride?: string,
   portOverride?: string,
+  useProxy?: boolean,
 ): Promise<string> {
   let text = await fetchIpnsFile("hashes.m3u");
   text = text.replace(/getstream/g, "manifest.m3u8");
   text = applyHostOverrides(text, ipOverride, portOverride);
+  if (useProxy) {
+    text = applyProxyFormat(text);
+  }
   return text;
 }
 

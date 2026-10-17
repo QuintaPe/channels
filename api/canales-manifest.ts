@@ -10,7 +10,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const ipOverride = typeof ipParam === "string" ? ipParam : undefined;
     const portParam = req.query.port;
     const portOverride = typeof portParam === "string" ? portParam : undefined;
-    const content = await fetchM3uManifest(ipOverride, portOverride);
+    const useProxy = req.query.proxy === "1" || req.query.proxy === "true";
+    const content = await fetchM3uManifest(ipOverride, portOverride, useProxy);
 
     res.setHeader("Content-Type", resolveM3uContentType(req.headers.accept, req.query.view));
     res.setHeader("Cache-Control", "public, max-age=300");
