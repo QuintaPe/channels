@@ -176,25 +176,41 @@ async function fetchIpnsFile(path: string, isValid: Validator = isM3u): Promise<
 }
 
 /**
- * Fetches the raw M3U content without any transformations
+ * Replaces the AceStream engine host and/or port baked into the playlist
+ * (defaults to 127.0.0.1:6878). The port is only swapped on whichever host
+ * ends up in the text, so it works whether or not ipOverride was given.
  */
-export async function fetchM3uRaw(ipOverride?: string): Promise<string> {
-  let text = await fetchIpnsFile("hashes.m3u");
+function applyHostOverrides(text: string, ipOverride?: string, portOverride?: string): string {
   if (ipOverride) {
     text = text.replace(/127\.0\.0\.1/g, ipOverride);
   }
+  if (portOverride) {
+    const host = ipOverride ?? "127.0.0.1";
+    const escapedHost = host.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    text = text.replace(new RegExp(`(${escapedHost}):\\d+`, "g"), `$1:${portOverride}`);
+  }
+  return text;
+}
+
+/**
+ * Fetches the raw M3U content without any transformations
+ */
+export async function fetchM3uRaw(ipOverride?: string, portOverride?: string): Promise<string> {
+  let text = await fetchIpnsFile("hashes.m3u");
+  text = applyHostOverrides(text, ipOverride, portOverride);
   return text;
 }
 
 /**
  * Fetches the M3U manifest and replaces all "getstream" URLs with "manifest.m3u8"
  */
-export async function fetchM3uManifest(ipOverride?: string): Promise<string> {
+export async function fetchM3uManifest(
+  ipOverride?: string,
+  portOverride?: string,
+): Promise<string> {
   let text = await fetchIpnsFile("hashes.m3u");
   text = text.replace(/getstream/g, "manifest.m3u8");
-  if (ipOverride) {
-    text = text.replace(/127\.0\.0\.1/g, ipOverride);
-  }
+  text = applyHostOverrides(text, ipOverride, portOverride);
   return text;
 }
 

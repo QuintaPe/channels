@@ -13,11 +13,14 @@ function getQueryParams(req: IncomingMessage): URLSearchParams {
 async function serveM3u(
   req: IncomingMessage,
   res: ServerResponse,
-  fetcher: (ip?: string) => Promise<string>,
+  fetcher: (ip?: string, port?: string) => Promise<string>,
 ): Promise<void> {
   try {
     const params = getQueryParams(req);
-    const content = await fetcher(params.get("ip") ?? undefined);
+    const content = await fetcher(
+      params.get("ip") ?? undefined,
+      params.get("port") ?? undefined,
+    );
     res.statusCode = 200;
     res.setHeader(
       "Content-Type",
