@@ -13,13 +13,15 @@ function getQueryParams(req: IncomingMessage): URLSearchParams {
 async function serveM3u(
   req: IncomingMessage,
   res: ServerResponse,
-  fetcher: (ip?: string, port?: string) => Promise<string>,
+  fetcher: (ip?: string, port?: string, useProxy?: boolean) => Promise<string>,
 ): Promise<void> {
   try {
     const params = getQueryParams(req);
+    const proxyParam = params.get("proxy");
     const content = await fetcher(
       params.get("ip") ?? undefined,
       params.get("port") ?? undefined,
+      proxyParam === "1" || proxyParam === "true",
     );
     res.statusCode = 200;
     res.setHeader(
